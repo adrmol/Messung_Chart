@@ -68,6 +68,7 @@ namespace Messung_Chart
             // 
             // fuehler_list
             // 
+            this.fuehler_list.CheckOnClick = true;
             this.fuehler_list.FormattingEnabled = true;
             this.fuehler_list.Location = new System.Drawing.Point(823, 39);
             this.fuehler_list.Name = "fuehler_list";
