@@ -43,7 +43,7 @@ namespace Messung_Chart
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chart_main.Location = new System.Drawing.Point(183, 9);
-            this.chart_main.MinimumSize = new System.Drawing.Size(480, 320);
+            this.chart_main.MinimumSize = new System.Drawing.Size(805, 436);
             this.chart_main.Name = "chart_main";
             this.chart_main.Size = new System.Drawing.Size(805, 436);
             this.chart_main.TabIndex = 0;

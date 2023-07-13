@@ -9,7 +9,6 @@ namespace Messung_Chart
 {
     public partial class Form1 : Form
     {
-        float legendHeight;
         MySqlConnection connection;
         public Form1()
         {
@@ -65,7 +64,6 @@ namespace Messung_Chart
             System.Drawing.Color.Pink
             };
 
-            int colorNumber = 0;
             chart_main.Series.Clear();
             scale();
 
@@ -75,8 +73,6 @@ namespace Messung_Chart
                 series1.ChartType = SeriesChartType.Line;  // Diagrammtyp auf Linie setzen
                 chart_main.Series.Add(series1);
                 series1.Color = allColors[fuehler_list.Items.IndexOf(tf_obj)];
-
-                colorNumber++;
 
                 string tf = tf_obj.ToString();
                 series1.LegendText = tf;
@@ -96,8 +92,6 @@ namespace Messung_Chart
                     }
                 }
             }
-            chart_main.Legends["Legend1"].Position.Auto = true;
-            legendHeight = chart_main.Legends["Legend1"].Position.Height;
         }
 
 
@@ -120,12 +114,6 @@ namespace Messung_Chart
             }
             chart_main.Legends.Add(new Legend("Legend1"));
             Legend legend = chart_main.Legends["Legend1"];
-
-            legend.Position.Width = 20;
-            legend.Position.X = 80;
-            legend.Position.Y = 10;
-            legend.Position.Height = legendHeight;
-            legend.BackColor = Color.Transparent;
 
             // Set the titles of the X and Y axes
             chart_main.ChartAreas[0].AxisX.Title = "Uhrzeit";
