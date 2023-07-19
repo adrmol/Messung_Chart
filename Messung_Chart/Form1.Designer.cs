@@ -79,7 +79,7 @@ namespace Messung_Chart
             this.fuehler_list.Name = "fuehler_list";
             this.fuehler_list.Size = new System.Drawing.Size(165, 409);
             this.fuehler_list.TabIndex = 3;
-            this.fuehler_list.SelectedIndexChanged += new System.EventHandler(this.fuehler_list_SelectedIndexChanged);
+            this.fuehler_list.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fuehler_list_ItemCheck);
             // 
             // panel1
             // 

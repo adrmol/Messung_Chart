@@ -19,6 +19,8 @@ namespace Messung_Chart
 
         private void datum_SelectedIndexChanged(object sender, EventArgs e)
         {
+            fuehler_list.Items.Clear();
+            chart_main.Series.Clear();
             string query = "SELECT DISTINCT temperaturfuehler FROM messungen WHERE Date(datum) = @datum;";
             DateTime.TryParse(datum.SelectedItem.ToString(), out var selected_datum);
             string mysql_datum = selected_datum.ToString("yyyy-MM-dd");
@@ -39,61 +41,8 @@ namespace Messung_Chart
                     }
                 }
             }
-            update_chart_main();
-        }
-
-        private void fuehler_list_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            update_chart_main();
-        }
-
-        private void update_chart_main()
-        {
-            // 10 colors in System.Drawing.Color
-            Color[] allColors = new System.Drawing.Color[]
-            {
-            System.Drawing.Color.Red,
-            System.Drawing.Color.Blue,
-            System.Drawing.Color.Green,
-            System.Drawing.Color.Orange,
-            System.Drawing.Color.Purple,
-            System.Drawing.Color.Brown,
-            System.Drawing.Color.Yellow,
-            System.Drawing.Color.Black,
-            System.Drawing.Color.Olive,
-            System.Drawing.Color.Pink
-            };
-
-            chart_main.Series.Clear();
             scale();
-
-            foreach (var tf_obj in fuehler_list.CheckedItems)
-            {
-                Series series1 = new Series();
-                series1.ChartType = SeriesChartType.Line;  // Diagrammtyp auf Linie setzen
-                chart_main.Series.Add(series1);
-                series1.Color = allColors[fuehler_list.Items.IndexOf(tf_obj)];
-
-                string tf = tf_obj.ToString();
-                series1.LegendText = tf;
-
-                string query = "SELECT temperaturfuehler, datum, temperatur FROM messungen WHERE temperaturfuehler LIKE @tf;";
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = query;
-                command.Parameters.AddWithValue("@tf", tf);
-
-                using (MySqlDataReader reader = command.ExecuteReader())
-                {
-                    for (int i = 0; reader.Read(); i++)
-                    {
-                        DateTime.TryParse(reader["datum"].ToString(), out var d);
-                        float.TryParse(reader["temperatur"].ToString(), out var t);
-                        series1.Points.AddXY(d, t);
-                    }
-                }
-            }
         }
-
 
         private void connect()
         {
@@ -133,7 +82,7 @@ namespace Messung_Chart
 
             for (int i = 0; i < 24; i++)
             {
-                // Adding data points for every hour; replace these with your actual data
+                // Adding data points for every hour
                 series.Points.AddXY(new DateTime(d.Year, d.Month, d.Day, i, 0, 0), i);
             }
 
@@ -153,6 +102,63 @@ namespace Messung_Chart
             ChartArea area = new ChartArea("ChartArea1");
             chart_main.ChartAreas.Add(area);
             area.Position = new ElementPosition(0, 0, 80, 100);
+        }
+
+        private void fuehler_list_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            // 10 colors in System.Drawing.Color
+            Color[] allColors = new System.Drawing.Color[]
+            {
+            System.Drawing.Color.Red,
+            System.Drawing.Color.Blue,
+            System.Drawing.Color.Green,
+            System.Drawing.Color.Orange,
+            System.Drawing.Color.Purple,
+            System.Drawing.Color.Brown,
+            System.Drawing.Color.Yellow,
+            System.Drawing.Color.Black,
+            System.Drawing.Color.Olive,
+            System.Drawing.Color.Pink
+            };
+            List<string> checkedItems = new List<string>();
+
+            foreach (var item in fuehler_list.CheckedItems)
+                checkedItems.Add(item.ToString());
+
+            if (e.NewValue == CheckState.Checked)
+                checkedItems.Add(fuehler_list.Items[e.Index].ToString());
+            else
+                checkedItems.Remove(fuehler_list.Items[e.Index].ToString());
+
+            for (int i = chart_main.Series.Count - 1; i > 0; i--)
+            {
+                chart_main.Series.RemoveAt(i);
+            }
+
+            foreach (string item in checkedItems)
+            {
+                Series series1 = new Series();
+                series1.ChartType = SeriesChartType.Line;  // Diagrammtyp auf Linie setzen
+                chart_main.Series.Add(series1);
+                series1.Color = allColors[checkedItems.IndexOf(item)];
+
+                series1.LegendText = item;
+
+                string query = "SELECT temperaturfuehler, datum, temperatur FROM messungen WHERE temperaturfuehler LIKE @tf;";
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = query;
+                command.Parameters.AddWithValue("@tf", item);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    for (int i = 0; reader.Read(); i++)
+                    {
+                        DateTime.TryParse(reader["datum"].ToString(), out var d);
+                        float.TryParse(reader["temperatur"].ToString(), out var t);
+                        series1.Points.AddXY(d, t);
+                    }
+                }
+            }
         }
     }
 }
